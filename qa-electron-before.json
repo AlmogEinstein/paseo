@@ -1,0 +1,32 @@
+{
+  "label": "before",
+  "steps": [
+    {
+      "step": "1. scrolled settings sidebar to the end",
+      "scrollTop": 244,
+      "scrollHeight": 963,
+      "clientHeight": 719
+    },
+    {
+      "step": "2. clicked Plugins",
+      "scrollTop": 0,
+      "sidebarSameDomNode": false,
+      "url": "/settings/hosts/<serverId>/plugins",
+      "header": "Plugins"
+    },
+    {
+      "step": "3. clicked Terminals",
+      "scrollTop": 0,
+      "sidebarSameDomNode": false,
+      "url": "/settings/hosts/<serverId>/terminals",
+      "header": "Terminals"
+    }
+  ],
+  "hostLabel": "paseo-dev-host",
+  "viewport": {
+    "w": 1200,
+    "h": 800,
+    "dpr": 1
+  },
+  "entryUrl": "/settings/general"
+}
