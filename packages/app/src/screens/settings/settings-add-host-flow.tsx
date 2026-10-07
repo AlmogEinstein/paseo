@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "expo-router";
 import { AddHostMethodModal } from "@/components/add-host-method-modal";
 import { AddHostModal } from "@/components/add-host-modal";
@@ -8,17 +8,33 @@ import { useIsCompactFormFactor } from "@/constants/layout";
 import { useSettingsAddHostFlowStore } from "@/stores/settings-add-host-flow-store";
 import { buildSettingsHostSectionRoute } from "@/utils/host-routes";
 
+type Step = "method" | "direct" | "remote-ssh" | "paste-link";
+
 export function SettingsAddHostFlow() {
   const router = useRouter();
   const isCompactLayout = useIsCompactFormFactor();
-  const step = useSettingsAddHostFlowStore((state) => state.step);
-  const goTo = useSettingsAddHostFlowStore((state) => state.goTo);
-  const close = useSettingsAddHostFlowStore((state) => state.close);
+  const request = useSettingsAddHostFlowStore((state) => state.request);
+  const clearRequest = useSettingsAddHostFlowStore((state) => state.close);
 
-  const goBackToMethods = useCallback(() => goTo("method"), [goTo]);
-  const selectDirectConnection = useCallback(() => goTo("direct"), [goTo]);
-  const selectRemoteSsh = useCallback(() => goTo("remote-ssh"), [goTo]);
-  const selectPasteLink = useCallback(() => goTo("paste-link"), [goTo]);
+  // The step is local, so leaving Settings unmounts it and a half-finished flow
+  // cannot reopen later. Seeding from the request already present at mount
+  // makes an unconsumed request from a previous visit a no-op.
+  const [step, setStep] = useState<Step | null>(null);
+  const [handledRequestId, setHandledRequestId] = useState(request?.id ?? 0);
+  if (request && request.id !== handledRequestId) {
+    setHandledRequestId(request.id);
+    setStep("method");
+  }
+
+  const close = useCallback(() => {
+    setStep(null);
+    clearRequest();
+  }, [clearRequest]);
+
+  const goBackToMethods = useCallback(() => setStep("method"), []);
+  const selectDirectConnection = useCallback(() => setStep("direct"), []);
+  const selectRemoteSsh = useCallback(() => setStep("remote-ssh"), []);
+  const selectPasteLink = useCallback(() => setStep("paste-link"), []);
 
   const handleScanQr = useCallback(() => {
     close();
