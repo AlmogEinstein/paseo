@@ -103,6 +103,18 @@ test.describe("Settings sidebar navigation", () => {
     await verifyLegacyHostSettingsRedirect(page);
   });
 
+  test("leaving Settings with the add-host sheet open does not reopen it", async ({ page }) => {
+    await gotoAppShell(page);
+    await openSettings(page);
+    await openAddHostFlow(page);
+
+    await page.goBack();
+    await expect(page).not.toHaveURL(/\/settings(\/|$)/);
+
+    await openSettings(page);
+    await expect(page.getByText("Add connection", { exact: true })).toHaveCount(0);
+  });
+
   test("direct connection advanced URI round-trips SSL and password into the form", async ({
     page,
   }) => {

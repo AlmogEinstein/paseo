@@ -1,21 +1,19 @@
 import { create } from "zustand";
 
-export type SettingsAddHostStep = "method" | "direct" | "remote-ssh" | "paste-link";
+export interface SettingsAddHostFlowRequest {
+  id: number;
+}
 
 interface SettingsAddHostFlowState {
-  step: SettingsAddHostStep | null;
+  request: SettingsAddHostFlowRequest | null;
   open: () => void;
-  goTo: (step: SettingsAddHostStep) => void;
   close: () => void;
 }
 
-export const useSettingsAddHostFlowStore = create<SettingsAddHostFlowState>((set) => ({
-  step: null,
-  open: () => set({ step: "method" }),
-  goTo: (step) => set({ step }),
-  close: () => set({ step: null }),
-}));
+let nextRequestId = 1;
 
-export function openSettingsAddHostFlow(): void {
-  useSettingsAddHostFlowStore.getState().open();
-}
+export const useSettingsAddHostFlowStore = create<SettingsAddHostFlowState>((set) => ({
+  request: null,
+  open: () => set({ request: { id: nextRequestId++ } }),
+  close: () => set({ request: null }),
+}));
